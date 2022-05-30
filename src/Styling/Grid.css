@@ -1,0 +1,31 @@
+.node- {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    outline: 1px solid rgba(144, 175, 175, 0.75);
+    display: inline-block;
+  }
+
+  .node-alive {
+    width: 30px;
+    height: 30px;
+    background-color: rgb(172, 138, 252, 0.75);
+    outline: 1px solid rgba(144, 175, 175, 0.75);
+    display: inline-block;
+  }
+  
+  .grid {
+    text-align: center;
+    margin: 100px 0 0;
+  }
+
+  .wrapper {
+    margin-left:auto;
+    margin-right:auto;
+    width: 2000px;
+  }
+
+  .row {
+      padding: 0px;
+      margin:-4px;
+  }
