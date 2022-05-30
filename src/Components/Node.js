@@ -1,5 +1,4 @@
 function Node(props) {
-  // const onClick = props.onClick;
   const onMouseDown = props.onMouseDown;
   const onMouseEnter = props.onMouseEnter;
   const onMouseUp = props.onMouseUp;

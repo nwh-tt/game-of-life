@@ -17,17 +17,8 @@ const createInitialGrid = () => {
 function updateGrid(grid, row, col) {
   const updatedGrid = grid.slice();
   const node = updatedGrid[row][col];
-  let alive = "";
-  if (node.isAlive === "alive") {
-    alive = "";
-  } else {
-    alive = "alive";
-  }
-  const newNode = {
-    ...node,
-    isAlive: alive,
-  };
-  updatedGrid[row][col] = newNode;
+  node.isAlive = node.isAlive ? "" : "alive";
+  updatedGrid[row][col] = node;
   return updatedGrid;
 }
 
@@ -36,11 +27,7 @@ function Grid() {
   const [mousePressed, setMousePressed] = useState(false);
 
   let grid = gridState;
-  /*
-  const handleClick = (row, col, e) => {
-    setGridState(updateGrid(grid, row, col));
-  };
-  */
+
   const handleMouseDown = (row, col, e) => {
     setMousePressed(true);
     setGridState(updateGrid(grid, row, col));
