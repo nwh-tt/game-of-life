@@ -33,10 +33,26 @@ function updateGrid(grid, row, col) {
 
 function Grid() {
   const [gridState, setGridState] = useState(createInitialGrid());
-  let grid = gridState;
+  const [mousePressed, setMousePressed] = useState(false);
 
+  let grid = gridState;
+  /*
   const handleClick = (row, col, e) => {
     setGridState(updateGrid(grid, row, col));
+  };
+  */
+  const handleMouseDown = (row, col, e) => {
+    setMousePressed(true);
+    setGridState(updateGrid(grid, row, col));
+  };
+  const handleMouseEnter = (row, col, e) => {
+    if (mousePressed) {
+      setGridState(updateGrid(grid, row, col));
+    }
+  };
+
+  const handleMouseUp = () => {
+    setMousePressed(false);
   };
 
   return (
@@ -50,7 +66,9 @@ function Grid() {
                   isAlive={node.isAlive}
                   col={node.col}
                   row={node.row}
-                  onClick={handleClick}
+                  onMouseDown={handleMouseDown}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseUp={handleMouseUp}
                 ></Node>
               );
             })}
