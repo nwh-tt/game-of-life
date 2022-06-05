@@ -1,12 +1,17 @@
 import "./Styling/App.css";
 import Grid from "./Components/Grid";
-// import Header from "./Components/Header";
 
 function App() {
+  //let gridToPass;
+  const getGrid = (grid) => {
+    return grid;
+    // console.log("worked");
+  };
+
   return (
     <div className="App">
-      <div className="wrapper">
-        <Grid />
+      <div>
+        <Grid callBack={getGrid} />
       </div>
     </div>
   );
