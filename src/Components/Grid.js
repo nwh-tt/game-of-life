@@ -6,18 +6,18 @@ import Header from "./Header.js";
 
 // this section manages the grid (update and creation) //
 
-const createInitialGrid = () => {
+const createInitialGrid = (size) => {
   const grid = [];
   // determines amount of cells to place based on window size
-  let width = (0.98 * window.innerWidth) / 30;
-  let height = (0.9 * window.innerHeight) / 30;
+  let width = (0.99 * window.innerWidth) / size;
+  let height = (window.innerHeight - 100) / size;
   let id = 0;
 
   // adds nodes to the grid represented by a 2d array
   for (let row = 0; row < height; row++) {
     const currentRow = [];
     for (let col = 0; col < width; col++) {
-      currentRow.push(createNode(col, row, id));
+      currentRow.push(createNode(col, row, id, size));
       id++;
     }
     grid.push(currentRow);
@@ -42,9 +42,9 @@ function updateGrid(grid, row, col) {
 // this section renders the grid //
 
 function Grid() {
-  const [gridState, setGridState] = useState(createInitialGrid());
+  const [gridState, setGridState] = useState(createInitialGrid(30));
   const [mousePressed, setMousePressed] = useState(false);
-  // const [intervalId, setIntervalId] = useState(0);
+
   // changes grid as a mutable copy
   let grid = gridState;
 
@@ -68,19 +68,23 @@ function Grid() {
 
   // updates the state when you press buttons in the header file
   const handler = (gridAfterRun) => {
-    // console.log("made it up");
     setGridState(gridAfterRun);
+  };
+
+  const handleResize = (size) => {
+    // 10 20 30 40 50 60
+    setGridState(createInitialGrid(size));
   };
 
   // uses map to render the grid, passes the current grid and the handler into header
   return (
     <div>
-      <Header grid={grid} handler={handler} />
+      <Header grid={grid} handler={handler} handleResize={handleResize} />
       <div className="wrapper">
-        <div className="grid">
+        <div className="grid-">
           {grid.map((row, rowIdx) => {
             return (
-              <div className="row" key={rowIdx}>
+              <div className="row-node" key={rowIdx}>
                 {row.map((node, nodeId) => {
                   return (
                     <Node
@@ -91,6 +95,7 @@ function Grid() {
                       onMouseDown={handleMouseDown}
                       onMouseEnter={handleMouseEnter}
                       onMouseUp={handleMouseUp}
+                      size={node.size}
                     ></Node>
                   );
                 })}
@@ -161,11 +166,12 @@ function updateNeighborAliveCount(grid, row, col) {
 }
 
 // creates a node object to be stored in the grid array
-const createNode = (col, row, id) => {
+const createNode = (col, row, id, size) => {
   return {
     id,
     col,
     row,
+    size,
     isAlive: "",
     aliveNeighbors: 0,
   };

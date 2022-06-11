@@ -10,9 +10,7 @@ function App() {
 
   return (
     <div className="App">
-      <div>
-        <Grid callBack={getGrid} />
-      </div>
+      <Grid callBack={getGrid} />
     </div>
   );
 }

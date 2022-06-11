@@ -4,33 +4,36 @@ import {
   Button,
   ButtonToolbar,
   ButtonGroup,
+  Form,
+  Row,
+  Col,
 } from "react-bootstrap";
 import { PlayFill, ArrowBarRight, Pause } from "react-bootstrap-icons";
 import { useState } from "react";
+import Slider from "@mui/material/Slider";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 
-export function PlayButton(props) {
-  if (props.isClicked) {
-    return (
-      <Button onClick={props.onStop} variant="dark">
-        <Pause size={28} />
-      </Button>
-    );
-  } else {
-    return (
-      <Button onClick={props.onStart} variant="dark">
-        <PlayFill size={28} />
-      </Button>
-    );
-  }
-}
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#42a5f5",
+    },
+    secondary: {
+      main: "#000000",
+    },
+  },
+});
 
 function Header(props) {
-  // const [runClicked, setRunClicked] = useState(false);
   const [intervalId, setIntervalId] = useState(0);
-  const [update, setUpdate] = useState(0);
   const [grid, setGrid] = useState(props.grid);
-  // calls stepConways and passes
-  // the updated grid into a function in grid.js that will update the state
+  const [size, setSize] = useState(30);
+  const [speed, setSpeed] = useState(40);
+
+  // calls stepConways when play is clicked and updates the grid every 1 second
+  // also makes the play button a pause button, when clicked again stops the execution
+  // and makes it a play button again
   const run = () => {
     if (intervalId) {
       clearInterval(intervalId);
@@ -39,36 +42,78 @@ function Header(props) {
     }
 
     const newIntervalId = setInterval(() => {
+      console.log(speed);
       setGrid((prevGrid) => {
         const temp = stepConways(prevGrid);
         props.handler(temp);
         return temp;
       });
-    }, 1000);
+    }, 1500 / (speed + 1));
     setIntervalId(newIntervalId);
   };
 
-  const stop = () => {
-    clearInterval(intervalId);
-  };
-
+  // goes one phase at time, updating the grid
   const step = () => {
     props.handler(stepConways(props.grid));
   };
 
   return (
-    <Navbar fixed="top" bg="light" variant="light">
+    <Navbar sticky="top" bg="light" variant="light">
       <Container fluid>
-        <Navbar.Brand>Conway's Game of Life</Navbar.Brand>
+        <h2 className="conways-title">Conway's Game of Life</h2>
+        <Form>
+          <Form.Group as={Row}>
+            <Col>
+              <Box sx={{ width: 200 }}>
+                <Form.Label>Speed</Form.Label>
+                <ThemeProvider theme={theme}>
+                  <Slider
+                    color="primary"
+                    value={speed}
+                    onChange={(e) => setSpeed(e.target.value)}
+                  />
+                </ThemeProvider>
+              </Box>
+            </Col>
+            <Col>
+              <Box sx={{ width: 200 }}>
+                <Form.Label>Size </Form.Label>
+                <ThemeProvider theme={theme}>
+                  <Slider
+                    color="primary"
+                    value={size}
+                    min={10}
+                    max={60}
+                    step={10}
+                    onChange={(e) => {
+                      if (e.target.value !== size) {
+                        console.log("called");
+                        setSize(e.target.value);
+                        props.handleResize(e.target.value);
+                      }
+                    }}
+                  />
+                </ThemeProvider>
+              </Box>
+            </Col>
+          </Form.Group>
+        </Form>
         <ButtonToolbar className="text-left">
           <ButtonGroup className="me-2">
-            <Button onClick={run} variant="dark">
-              {intervalId ? <Pause size={28} /> : <PlayFill size={28} />}
+            <Button
+              style={{ background: "#42a5f5", border: "#42a5f5" }}
+              onClick={run}
+            >
+              {intervalId ? (
+                <Pause size={28} color="white" />
+              ) : (
+                <PlayFill size={28} color="white" />
+              )}
             </Button>
           </ButtonGroup>
           <ButtonGroup>
             <Button onClick={step} variant="light">
-              <ArrowBarRight size={28} />
+              <ArrowBarRight color="#42a5f5" size={28} />
             </Button>
           </ButtonGroup>
         </ButtonToolbar>
