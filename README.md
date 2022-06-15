@@ -3,6 +3,10 @@ A fully functioning simulation for conways game of life
 put link here
 put image here
 
+
+If you want to mess with some of the code yourself simply clone the respository, navigate to the game-of-life folder in your file system, and run 
+npm install.
+
 Conways Game of Life is a simple simulation of life with 4 simple rules
   1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.
   2. Any live cell with two or three live neighbours lives on to the next generation.
