@@ -8,7 +8,8 @@ Conways Game of Life is a simple simulation of life with 4 simple rules
   2. Any live cell with two or three live neighbours lives on to the next generation.
   3. Any live cell with more than three live neighbours dies, as if by overpopulation.
   4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-  
+![Rules-of-Conways-Game-of-Life](https://user-images.githubusercontent.com/67919804/173730676-220348de-e635-410d-8bd9-1eb3cbdbbf96.png)
+
 These rules, which compare the behavior of the automaton to real life, can be condensed into the following:
   - Any live cell with two or three live neighbours survives.
   - Any dead cell with three live neighbours becomes a live cell.
