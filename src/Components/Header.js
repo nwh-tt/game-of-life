@@ -8,7 +8,13 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import { PlayFill, ArrowBarRight, Pause } from "react-bootstrap-icons";
+import {
+  PlayFill,
+  ArrowBarRight,
+  Pause,
+  XLg,
+  Info,
+} from "react-bootstrap-icons";
 import { useState } from "react";
 import Slider from "@mui/material/Slider";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -42,13 +48,12 @@ function Header(props) {
     }
 
     const newIntervalId = setInterval(() => {
-      console.log(speed);
       setGrid((prevGrid) => {
         const temp = stepConways(prevGrid);
         props.handler(temp);
         return temp;
       });
-    }, 1500 / (speed + 1));
+    }, 10000 / (speed + 1));
     setIntervalId(newIntervalId);
   };
 
@@ -60,7 +65,7 @@ function Header(props) {
   return (
     <Navbar sticky="top" bg="light" variant="light">
       <Container fluid>
-        <h2 className="conways-title">Conway's Game of Life</h2>
+        <h1 className="conways-title">Game of Life</h1>
         <Form>
           <Form.Group as={Row}>
             <Col>
@@ -70,7 +75,12 @@ function Header(props) {
                   <Slider
                     color="primary"
                     value={speed}
-                    onChange={(e) => setSpeed(e.target.value)}
+                    min={20}
+                    max={90}
+                    onChange={(e) => {
+                      setSpeed(e.target.value);
+                      props.passSpeed(speed);
+                    }}
                   />
                 </ThemeProvider>
               </Box>
@@ -82,14 +92,12 @@ function Header(props) {
                   <Slider
                     color="primary"
                     value={size}
-                    min={10}
+                    min={20}
                     max={60}
-                    step={10}
                     onChange={(e) => {
                       if (e.target.value !== size) {
-                        console.log("called");
                         setSize(e.target.value);
-                        props.handleResize(e.target.value);
+                        setGrid(props.handleResize(e.target.value));
                       }
                     }}
                   />
@@ -99,7 +107,18 @@ function Header(props) {
           </Form.Group>
         </Form>
         <ButtonToolbar className="text-left">
-          <ButtonGroup className="me-2">
+          <ButtonGroup>
+            <Button variant="light">
+              <XLg
+                color="#42a5f5"
+                size={28}
+                onClick={() => {
+                  props.clearGrid(size);
+                }}
+              />
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup className="px-2">
             <Button
               style={{ background: "#42a5f5", border: "#42a5f5" }}
               onClick={run}

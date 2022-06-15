@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../Styling/Grid.css";
 import Node from "./Node.js";
@@ -17,7 +17,7 @@ const createInitialGrid = (size) => {
   for (let row = 0; row < height; row++) {
     const currentRow = [];
     for (let col = 0; col < width; col++) {
-      currentRow.push(createNode(col, row, id, size));
+      currentRow.push(createNode(col, row, id));
       id++;
     }
     grid.push(currentRow);
@@ -25,6 +25,38 @@ const createInitialGrid = (size) => {
   // addNeighbors adds neighbors for each cell
   addNeighbors(grid);
   return grid;
+};
+
+const changeGridSize = (size, grid) => {
+  const newGrid = grid;
+  let width = (0.99 * window.innerWidth) / size;
+  let height = (window.innerHeight - 100) / size;
+  const id = 0;
+  // if grid gets more squares added
+  if (grid.length < height) {
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = grid[i].length; j < width; j++) {
+        newGrid[i].push(createNode(j, i, id));
+      }
+    }
+    for (let i = grid.length; i < height; i++) {
+      const newRow = [];
+      for (let j = 0; j < width; j++) {
+        newRow.push(createNode(j, i, id));
+      }
+      newGrid.push(newRow);
+    }
+  } else if (grid.length > height) {
+    for (let i = grid.length - 1; i > height; i--) {
+      newGrid.pop();
+    }
+    for (let i = 0; i < newGrid.length; i++) {
+      for (let j = grid[i].length - 1; j > width; j--) {
+        newGrid[i].pop();
+      }
+    }
+  }
+  return newGrid;
 };
 
 // updates the grid whenever a specific node is clicked
@@ -44,6 +76,7 @@ function updateGrid(grid, row, col) {
 function Grid() {
   const [gridState, setGridState] = useState(createInitialGrid(30));
   const [mousePressed, setMousePressed] = useState(false);
+  const [size, setSize] = useState(30);
 
   // changes grid as a mutable copy
   let grid = gridState;
@@ -72,14 +105,31 @@ function Grid() {
   };
 
   const handleResize = (size) => {
-    // 10 20 30 40 50 60
+    setSize(size);
+    const test = changeGridSize(size, gridState);
+    setGridState(test);
+    return test;
+  };
+
+  const speed = useRef(30);
+  const saveSpeed = (rate) => {
+    speed.current = rate;
+  };
+
+  const clearGrid = (size) => {
     setGridState(createInitialGrid(size));
   };
 
   // uses map to render the grid, passes the current grid and the handler into header
   return (
     <div>
-      <Header grid={grid} handler={handler} handleResize={handleResize} />
+      <Header
+        grid={gridState}
+        handler={handler}
+        handleResize={handleResize}
+        passSpeed={saveSpeed}
+        clearGrid={clearGrid}
+      />
       <div className="wrapper">
         <div className="grid-">
           {grid.map((row, rowIdx) => {
@@ -92,10 +142,12 @@ function Grid() {
                       isAlive={node.isAlive}
                       col={node.col}
                       row={node.row}
+                      animate={node.animate}
                       onMouseDown={handleMouseDown}
                       onMouseEnter={handleMouseEnter}
                       onMouseUp={handleMouseUp}
-                      size={node.size}
+                      size={size}
+                      speed={speed.current}
                     ></Node>
                   );
                 })}
@@ -166,12 +218,11 @@ function updateNeighborAliveCount(grid, row, col) {
 }
 
 // creates a node object to be stored in the grid array
-const createNode = (col, row, id, size) => {
+const createNode = (col, row, id) => {
   return {
     id,
     col,
     row,
-    size,
     isAlive: "",
     aliveNeighbors: 0,
   };
