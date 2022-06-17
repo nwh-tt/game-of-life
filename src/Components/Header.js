@@ -8,13 +8,7 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import {
-  PlayFill,
-  ArrowBarRight,
-  Pause,
-  XLg,
-  Info,
-} from "react-bootstrap-icons";
+import { PlayFill, ArrowBarRight, Pause, XLg } from "react-bootstrap-icons";
 import { useState } from "react";
 import Slider from "@mui/material/Slider";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -33,25 +27,22 @@ const theme = createTheme({
 
 function Header(props) {
   const [intervalId, setIntervalId] = useState(0);
-  const [grid, setGrid] = useState(props.grid);
   const [size, setSize] = useState(30);
   const [speed, setSpeed] = useState(40);
 
-  // calls stepConways when play is clicked and updates the grid every 1 second
-  // also makes the play button a pause button, when clicked again stops the execution
-  // and makes it a play button again
+  // calls the stepConways function at a speed determined by the slider while the game is running
   const run = () => {
+    // runs when pause is pressed
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(0);
       return;
     }
 
+    // runs continously while play is pressed
     const newIntervalId = setInterval(() => {
-      setGrid((prevGrid) => {
-        const temp = stepConways(prevGrid);
-        props.handler(temp);
-        return temp;
+      props.handler((prevGrid) => {
+        return stepConways(prevGrid);
       });
     }, 10000 / (speed + 1));
     setIntervalId(newIntervalId);
@@ -97,7 +88,7 @@ function Header(props) {
                     onChange={(e) => {
                       if (e.target.value !== size) {
                         setSize(e.target.value);
-                        setGrid(props.handleResize(e.target.value));
+                        props.handleResize(e.target.value);
                       }
                     }}
                   />
@@ -141,16 +132,23 @@ function Header(props) {
   );
 }
 
-function stepConways(grid) {
+/**
+ * Loops through the grid and updates each node to either be alive or dead based on the rules of the game
+ *
+ * @param {*} grid the grid preupdate
+ * @returns the grid post-update
+ */
+function stepConways(prevGrid) {
   // creates a deep copy
-  const newGrid = JSON.parse(JSON.stringify(grid));
-  // loops through the old grid updating the new one based off conways rules
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[0].length; j++) {
-      const oldNode = grid[i][j];
+  const newGrid = JSON.parse(JSON.stringify(prevGrid));
+
+  // loops through the old grid and updates the new one
+  for (let i = 0; i < prevGrid.length; i++) {
+    for (let j = 0; j < prevGrid[0].length; j++) {
+      const oldNode = prevGrid[i][j];
       let liveNeighbors = oldNode.aliveNeighbors;
 
-      // when the node is alive it only lives if it has 2 or three neighbors
+      // when the node is currently alive it only lives on if it has 2 or three neighbors
       if (oldNode.isAlive === "alive") {
         if (liveNeighbors < 2 || liveNeighbors > 3) {
           newGrid[i][j].isAlive = "";
@@ -160,7 +158,7 @@ function stepConways(grid) {
         // if the node is dead it will come to life if it has 3 living neighbors
         if (liveNeighbors === 3) {
           newGrid[i][j].isAlive = "alive";
-          addToNeighbors(newGrid, i, j);
+          addToNeighbors(newGrid, i, j); // updates the neighbors of the new node
         }
       }
     }
@@ -168,8 +166,13 @@ function stepConways(grid) {
   return newGrid;
 }
 
-// updates the neighbors aliveNeighbors count based on if the node just came alive or
-// died off
+/**
+ * updates the neighbor count of the nodes neighbors at the given coordinates (row, col)
+ *
+ * @param {*} newGrid the new grid currently being updated
+ * @param {*} row  the y coordinate
+ * @param {*} col  the x coordinate
+ */
 function addToNeighbors(newGrid, row, col) {
   const centerNode = newGrid[row][col];
   for (

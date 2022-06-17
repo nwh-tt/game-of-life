@@ -4,34 +4,44 @@ import "../Styling/Grid.css";
 import Node from "./Node.js";
 import Header from "./Header.js";
 
-// this section manages the grid (update and creation) //
-
-const createInitialGrid = (size) => {
+/**
+ * Creates an empty grid of nodes based on the size passed in.
+ *
+ * @param {*} nodeSize the size of the squares in the grid
+ * @returns the empty grid of nodes nodesize x nodesize
+ */
+const createInitialGrid = (nodeSize) => {
   const grid = [];
-  // determines amount of cells to place based on window size
-  let width = (0.99 * window.innerWidth) / size;
-  let height = (window.innerHeight - 100) / size;
-  let id = 0;
+
+  let gridWidth = (0.99 * window.innerWidth) / nodeSize;
+  let gridHeight = (window.innerHeight - 100) / nodeSize;
 
   // adds nodes to the grid represented by a 2d array
-  for (let row = 0; row < height; row++) {
+  for (let row = 0; row < gridHeight; row++) {
     const currentRow = [];
-    for (let col = 0; col < width; col++) {
-      currentRow.push(createNode(col, row, id));
-      id++;
+    for (let col = 0; col < gridWidth; col++) {
+      currentRow.push(createNode(col, row));
     }
     grid.push(currentRow);
   }
-  // addNeighbors adds neighbors for each cell
-  addNeighbors(grid);
+
   return grid;
 };
 
-const changeGridSize = (size, grid) => {
+/**
+ * updates the size of the nodes within the grid based on nodeSize. Preserves the current status (alive or dead)
+ * of all the nodes and stores them in the newly sized grid
+ *
+ * @param {*} nodeSize the size to update the nodes to
+ * @param {*} grid the current grid so we can keep track of the status of the nodes
+ * @returns the grid with the updated nodes size
+ */
+const changeGridSize = (nodeSize, grid) => {
   const newGrid = grid;
-  let width = (0.99 * window.innerWidth) / size;
-  let height = (window.innerHeight - 100) / size;
+  let width = (0.99 * window.innerWidth) / nodeSize;
+  let height = (window.innerHeight - 100) / nodeSize;
   const id = 0;
+
   // if grid gets more squares added
   if (grid.length < height) {
     for (let i = 0; i < grid.length; i++) {
@@ -47,6 +57,7 @@ const changeGridSize = (size, grid) => {
       newGrid.push(newRow);
     }
   } else if (grid.length > height) {
+    // if grid gets less squares added
     for (let i = grid.length - 1; i > height; i--) {
       newGrid.pop();
     }
@@ -59,7 +70,14 @@ const changeGridSize = (size, grid) => {
   return newGrid;
 };
 
-// updates the grid whenever a specific node is clicked
+/**
+ * Flips the nodes status at the given row and column and updates the living node count of the neighbors
+ *
+ * @param {*} grid the current grid
+ * @param {*} row the y coordinate of the node to flip
+ * @param {*} col the x coordinate of the node to flip
+ * @returns
+ */
 function updateGrid(grid, row, col) {
   const updatedGrid = grid.slice();
   const node = updatedGrid[row][col];
@@ -70,8 +88,6 @@ function updateGrid(grid, row, col) {
   updateNeighborAliveCount(grid, row, col);
   return updatedGrid;
 }
-
-// this section renders the grid //
 
 function Grid() {
   const [gridState, setGridState] = useState(createInitialGrid(30));
@@ -111,13 +127,16 @@ function Grid() {
     return test;
   };
 
+  // saves the speed of the game to local storage
   const speed = useRef(30);
   const saveSpeed = (rate) => {
     speed.current = rate;
   };
 
   const clearGrid = (size) => {
-    setGridState(createInitialGrid(size));
+    const grid = createInitialGrid(size);
+    setGridState(grid);
+    return grid;
   };
 
   // uses map to render the grid, passes the current grid and the handler into header
@@ -160,40 +179,13 @@ function Grid() {
   );
 }
 
-// loops through the grid and adds an array of each nodes neighbors stored
-// by each node object
-function addNeighbors(grid) {
-  for (let i = 0; i < grid.length; i++) {
-    let row = grid[i];
-    for (let j = 0; j < row.length; j++) {
-      let node = row[j];
-      node.neighbors = getNeighbors(grid, i, j);
-    }
-  }
-}
-
-// returns an array of the node in grid[row][col] neighbors
-function getNeighbors(grid, row, col) {
-  let neighbors = [];
-  for (
-    let i = Math.max(0, row - 1);
-    i <= Math.min(row + 1, grid.length - 1);
-    i++
-  ) {
-    for (
-      let j = Math.max(0, col - 1);
-      j <= Math.min(col + 1, grid[0].length - 1);
-      j++
-    ) {
-      if (i !== row || j !== col) {
-        neighbors.push({ ...grid[i][j], neighbors: [] });
-      }
-    }
-  }
-  return neighbors;
-}
-
-// updates the aliveNeighbors value of each neighbor
+/**
+ * updates the aliveNeighbors count of all the nodes neighbors at the given row and column
+ *
+ * @param {*} grid the current grid
+ * @param {*} row the y coordinate of the node being updated
+ * @param {*} col the x coordinate of the node being updated
+ */
 function updateNeighborAliveCount(grid, row, col) {
   const centerNode = grid[row][col];
   for (
@@ -217,10 +209,14 @@ function updateNeighborAliveCount(grid, row, col) {
   }
 }
 
-// creates a node object to be stored in the grid array
-const createNode = (col, row, id) => {
+/**
+ * creates a node object and stores its position. Also sets the aliveNeighbors count and status to default 0 and ""
+ * @param {*} col x coordinate of the node
+ * @param {*} row y coordinate of the node
+ * @returns the node object
+ */
+const createNode = (col, row) => {
   return {
-    id,
     col,
     row,
     isAlive: "",
