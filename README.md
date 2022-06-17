@@ -1,12 +1,13 @@
-A fully functioning simulation for conways game of life
+# A fully functioning simulation for conways game of life
 
 put link here
-put image here
+![image](https://user-images.githubusercontent.com/67919804/174201939-065ac312-2feb-4b95-bf8c-13d90c893e18.png)
 
 
 If you want to mess with some of the code yourself simply clone the respository, navigate to the game-of-life folder in your file system, and run 
 npm install.
 
+# How the game works
 Conways Game of Life is a simple simulation of life with 4 simple rules
   1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.
   2. Any live cell with two or three live neighbours lives on to the next generation.
@@ -28,6 +29,6 @@ rules continue to be applied repeatedly to create further generations.
 When stretched out across many generation. there are some really interesting things that can happen. I have compiled a few of my 
 favorites under the info icon if you are interested.
  
- 
- 
-The code that is simulating the rules is found in the header file and is explained there with comments. But I'll give a quick summary here
+ # How the Website works
+ Click and drag to make cells come alive. If the cell is filled it is living. Click the step button to go one generation at a time, the play button
+ will step every n seconods as determined by the speed slider. The x will clear the board.
